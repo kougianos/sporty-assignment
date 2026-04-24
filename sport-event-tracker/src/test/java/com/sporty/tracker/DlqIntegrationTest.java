@@ -34,6 +34,8 @@ class DlqIntegrationTest {
     static void overrideProperties(DynamicPropertyRegistry registry) {
         TestKafkaHelper.configureKafkaProperties(registry, kafka);
         registry.add("app.external-api.base-url", () -> "http://localhost:19999");
+        registry.add("app.kafka.publish.retry.delay-ms", () -> "100");
+        registry.add("app.kafka.publish.retry.multiplier", () -> "1");
     }
 
     @Test

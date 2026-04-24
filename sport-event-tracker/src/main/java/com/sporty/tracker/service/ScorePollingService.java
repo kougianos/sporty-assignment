@@ -31,7 +31,7 @@ public class ScorePollingService {
             return;
         }
 
-        log.info("Polling scores for {} live event(s) in parallel", liveEventIds.size());
+        log.info("Polling scores for {} live event(s): {}", liveEventIds.size(), liveEventIds);
 
         var futures = liveEventIds.stream()
                 .map(eventId -> CompletableFuture.runAsync(() -> pollScoreForEvent(eventId), pollingExecutor))

@@ -28,5 +28,10 @@ app:
   kafka:
     topic: sport-event-scores
     dlq-topic: sport-event-scores-dlq
+    publish:
+      retry:
+        max-attempts: 3
+        delay-ms: 500
+        multiplier: 2
   polling:
     interval-ms: 10000

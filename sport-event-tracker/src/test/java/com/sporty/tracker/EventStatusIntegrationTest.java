@@ -60,6 +60,8 @@ class EventStatusIntegrationTest {
         registry.add("app.polling.interval-ms", () -> "100");
         registry.add("app.external-api.retry.delay-ms", () -> "100");
         registry.add("app.external-api.retry.multiplier", () -> "2");
+        registry.add("app.kafka.publish.retry.delay-ms", () -> "100");
+        registry.add("app.kafka.publish.retry.multiplier", () -> "1");
     }
 
     @Test
