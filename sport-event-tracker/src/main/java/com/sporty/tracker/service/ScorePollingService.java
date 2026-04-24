@@ -27,7 +27,7 @@ public class ScorePollingService {
     public void pollLiveEventScores() {
         var liveEventIds = eventStateService.getLiveEventIds();
         if (liveEventIds.isEmpty()) {
-            log.debug("No live events to poll");
+            log.info("No live events to poll");
             return;
         }
 
