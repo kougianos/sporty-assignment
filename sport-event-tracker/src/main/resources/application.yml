@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: sport-event-tracker
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      retries: 0
+    consumer:
+      group-id: sport-event-tracker-dlq-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: com.sporty.tracker.dto
+
+app:
+  external-api:
+    base-url: http://localhost:8081
+    scores-path: /api/scores/{eventId}
+    retry:
+      delay-ms: 1000
+      multiplier: 2
+  kafka:
+    topic: sport-event-scores
+    dlq-topic: sport-event-scores-dlq
+  polling:
+    interval-ms: 10000
