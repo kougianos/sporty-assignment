@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
 import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @Service
@@ -18,6 +21,8 @@ public class ScorePollingService {
     private final ExternalApiClient externalApiClient;
     private final ScoreEventProducer scoreEventProducer;
 
+    private final ExecutorService pollingExecutor = Executors.newVirtualThreadPerTaskExecutor();
+
     @Scheduled(fixedDelayString = "${app.polling.interval-ms}")
     public void pollLiveEventScores() {
         var liveEventIds = eventStateService.getLiveEventIds();
@@ -26,11 +31,13 @@ public class ScorePollingService {
             return;
         }
 
-        log.info("Polling scores for {} live event(s)", liveEventIds.size());
+        log.info("Polling scores for {} live event(s) in parallel", liveEventIds.size());
 
-        for (String eventId : liveEventIds) {
-            pollScoreForEvent(eventId);
-        }
+        var futures = liveEventIds.stream()
+                .map(eventId -> CompletableFuture.runAsync(() -> pollScoreForEvent(eventId), pollingExecutor))
+                .toArray(CompletableFuture[]::new);
+
+        CompletableFuture.allOf(futures).join();
     }
 
     private void pollScoreForEvent(String eventId) {
