@@ -49,6 +49,10 @@ Tests use **Testcontainers** (Kafka) and **WireMock** (external API mock). You o
 mvn clean test -pl sport-event-tracker
 ```
 
+### CI (GitHub Actions)
+
+A CI workflow runs on every push and pull request to `main`. It builds the project, runs all integration tests (Testcontainers works natively on GitHub Actions Ubuntu runners — Docker is pre-installed), and publishes test results with a formatted summary via [dorny/test-reporter](https://github.com/dorny/test-reporter).
+
 ## API Reference
 
 ### Update Event Status
