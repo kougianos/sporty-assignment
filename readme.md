@@ -157,7 +157,8 @@ sporty-assignment/
 
 - **Exponential backoff retry**: External API calls use Spring Retry with `@Retryable`: 3 attempts with configurable exponential backoff (default: 1s initial delay, 2x multiplier).
 
-- **Dead Letter Queue**: If publishing a score event to Kafka fails, the message is sent to a DLQ topic (`sport-event-scores-dlq`). A `@KafkaListener` consumer automatically picks up DLQ messages and retries publishing to the main topic.
+- **Dead Letter Queue**: If publishing a score event to Kafka fails, the message is sent to a DLQ topic (`sport-event-scores-dlq`). A `@KafkaListener` consumer automatically picks up DLQ messages and retries publishing to the main topic. 
+> **Note:** In this implementation the DLQ producer and consumer share the same Kafka broker, which means a full broker outage would affect both the main publish and the DLQ. In a production system, the DLQ consumer should live in a separate service and ideally write to a different broker or persistent store to achieve true fault tolerance. A simpler alternative for this scope would be synchronous retries (Spring Retry) on the Kafka publish itself, the DLQ approach was chosen here to demonstrate the pattern.
 
 - **Flexible input parsing**: The `POST /events/status` endpoint accepts `eventId` as string or number, and `status` as a string (`"live"`, `"not live"`) or boolean (`true`/`false`), using custom Jackson deserializers.
 
