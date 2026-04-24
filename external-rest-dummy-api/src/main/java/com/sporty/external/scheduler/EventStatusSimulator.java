@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,12 +34,15 @@ public class EventStatusSimulator {
         boolean sendInvalid = random.nextInt(100) < 20;
 
         var payload = sendInvalid ? generateInvalidPayload(random) : generateValidPayload(random);
-        var url = trackerBaseUrl + "/events/status";
+        var uri = UriComponentsBuilder.fromHttpUrl(trackerBaseUrl)
+                .path("/events/status")
+                .build()
+                .toUri();
 
-        log.info("Sending {} payload to {}: {}", sendInvalid ? "INVALID" : "VALID", url, payload);
+        log.info("Sending {} payload to {}: {}", sendInvalid ? "INVALID" : "VALID", uri, payload);
 
         try {
-            var response = restTemplate.postForEntity(url, payload, String.class);
+            var response = restTemplate.postForEntity(uri, payload, String.class);
             log.info("Response: {} - {}", response.getStatusCode(), response.getBody());
         } catch (RestClientException e) {
             log.warn("Failed to call tracker: {}", e.getMessage());

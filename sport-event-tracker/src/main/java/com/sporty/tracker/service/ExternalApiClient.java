@@ -9,6 +9,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -30,8 +31,11 @@ public class ExternalApiClient {
                     multiplierExpression = "${app.external-api.retry.multiplier:2}")
     )
     public ExternalScoreResponse fetchScore(String eventId) {
-        var url = baseUrl + scoresPath.replace("{eventId}", eventId);
-        log.debug("Fetching score for event {} from {}", eventId, url);
-        return restTemplate.getForObject(url, ExternalScoreResponse.class);
+        var uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(scoresPath)
+                .buildAndExpand(eventId)
+                .toUri();
+        log.debug("Fetching score for event {} from {}", eventId, uri);
+        return restTemplate.getForObject(uri, ExternalScoreResponse.class);
     }
 }

@@ -43,6 +43,7 @@ public class ScorePollingService {
     private void pollScoreForEvent(String eventId) {
         try {
             var scoreResponse = externalApiClient.fetchScore(eventId);
+            log.info("Fetched score response from external API: {}", scoreResponse);
             var message = ScoreEventMessage.builder()
                     .eventId(scoreResponse.eventId())
                     .currentScore(scoreResponse.currentScore())
