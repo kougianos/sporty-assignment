@@ -1,0 +1,9 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: external-rest-dummy-api
+
+app:
+  tracker:
+    base-url: http://localhost:8080
